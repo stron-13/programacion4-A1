@@ -1,48 +1,34 @@
-var $ = el => document.querySelector(el);
-document.addEventListener("DOMContentLoaded",event=>{
-    let mostrarVista = $("[class*='mostrar-alumnos']"),
-     mostrardocente= $("[class*='mostrar-docentes']");
-    mostrarVista.addEventListener('click',e=>{
-        console.log(mostrarVista);
-        
-        e.stopPropagation();
-
-        let modulo = e.target.dataset.modulo;
-        console.log(modulo);
-        fetch('/public/vistas/Alumnos/alumnos.html').then( resp=>resp.text() ).then(resp=>{
-            $(`#vista-${modulo}`).innerHTML = resp;
-          
-            
-            let btnCerrar = $(".close");
-            btnCerrar.addEventListener("click",event=>{
-                $(`#vista-${modulo}`).innerHTML = "";
-            });
-
-            let cuerpo = $("body"),
-                script = document.createElement("script");
-            script.src = `/public/vistas/Alumnos/${modulo}.js`;
-            cuerpo.appendChild(script);
-        });
+function init(){
+    var $ = el => {
+        return el.match(/^#/) ? document.querySelector(el) : document.querySelectorAll(el);
        
-    });
-    mostrardocente.addEventListener('click',e=>{
-        e.stopPropagation();
-        let modulo = e.target.dataset.modulo;
-        console.log(modulo);
-        fetch('/public/vistas/Docentes/docentes.html').then( resp=>resp.text() ).then(resp=>{
-            $(`#vista-${modulo}`).innerHTML = resp;
-          
-            
-            let btnCerrar = $(".close");
-            btnCerrar.addEventListener("click",event=>{
-                $(`#vista-${modulo}`).innerHTML = "";
+    }
+    let mostrarVista = $("[class*='mostrar']");
+    mostrarVista.forEach(element => {
+        element.addEventListener('click',e=>{
+            e.stopPropagation();
+
+            let modulo = e.srcElement.dataset.modulo,
+                form   = e.srcElement.dataset.form;
+                
+                
+            fetch(`public/vistas/${modulo}/${form}.html`).then( resp=>resp.text() ).then(resp=>{
+              
+                $(`#vista-${form}`).innerHTML  =resp;
+                   let btnCerrar = $(`#btn-close-${form}`);
+                   console.log(btnCerrar);
+                   
+                btnCerrar.addEventListener("click",event=>{
+                    $(`#vista-${form}`).innerHTML = "";
+                });
+                import(`../vistas/${modulo}/${form}.js`).then(module=>{
+                    module.modulo();
+                });
+                init();
+
             });
-
-            let cuerpo = $("body"),
-                script = document.createElement("script");
-            script.src = `/public/vistas/Docentes/${modulo}.js`;
-            cuerpo.appendChild(script);
+            
         });
-
     });
-});
+}
+init();

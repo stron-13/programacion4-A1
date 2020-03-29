@@ -1,12 +1,12 @@
-[7:24 p. m., 21/3/2020] ~🌻~: <?php 
-include('/private/config/config.php');
-$docente = new docente($conexion);
+<?php 
+include('../../Config/Config.php');
+$docente = new docente($Conexion);
 
 $proceso = '';
 if( isset($_GET['proceso']) && strlen($_GET['proceso'])>0 ){
 	$proceso = $_GET['proceso'];
 }
-$docente->$proceso( $_GET['docentes'] );
+$docente->$proceso( $_GET['docente'] );
 print_r(json_encode($docente->respuesta));
 
 class docente{
@@ -22,13 +22,13 @@ class docente{
     }
     private function validar_datos(){
         if( empty($this->datos['codigo']) ){
-            $this->respuesta['msg'] = 'por favor ingrese el codigo del docente';
+            $this->respuesta['msg'] = 'por favor ingrese el codigo del  Docente';
         }
         if( empty($this->datos['nombre']) ){
-            $this->respuesta['msg'] = 'por favor ingrese el nombre del docente';
+            $this->respuesta['msg'] = 'por favor ingrese el nombre del  Docente';
         }
         if( empty($this->datos['direccion']) ){
-            $this->respuesta['msg'] = 'por favor ingrese la direccion del docente';
+            $this->respuesta['msg'] = 'por favor ingrese la direccion del Docente';
         }
         $this->almacenar_docente();
     }
@@ -36,7 +36,7 @@ class docente{
         if( $this->respuesta['msg']==='correcto' ){
             if( $this->datos['accion']==='nuevo' ){
                 $this->db->consultas('
-                    INSERT INTO docente (codigo,nombre,direccion,telefono) VALUES(
+                    INSERT INTO docentes (codigo,nombre,direccion,telefono) VALUES(
                         "'. $this->datos['codigo'] .'",
                         "'. $this->datos['nombre'] .'",
                         "'. $this->datos['direccion'] .'",
@@ -44,8 +44,33 @@ class docente{
                     )
                 ');
                 $this->respuesta['msg'] = 'Registro insertado correctamente';
+            } else if( $this->datos['accion']==='modificar' ){
+                $this->db->consultas('
+                   UPDATE docentes SET
+                        codigo     = "'. $this->datos['codigo'] .'",
+                        nombre     = "'. $this->datos['nombre'] .'",
+                        direccion  = "'. $this->datos['direccion'] .'",
+                        telefono   = "'. $this->datos['telefono'] .'"
+                    WHERE idDocente = "'. $this->datos['idDocente'] .'"
+                ');
+                $this->respuesta['msg'] = 'Registro actualizado correctamente';
             }
         }
     }
+    public function buscarDocente($valor=''){
+        $this->db->consultas('
+            select docentes.idDocente, docentes.codigo, docentes.nombre, docentes.direccion, docentes.telefono
+            from docentes
+            where docentes.codigo like "%'.$valor.'%" or docentes.nombre like "%'.$valor.'%"
+        ');
+        return $this->respuesta = $this->db->obtener_datos();
+    }
+    public function eliminarDocente($idDoncente=''){
+        $this->db->consultas('
+            delete docentes
+            from docentes
+            where docentes.idDocente = "'.$idDoncente.'"
+        ');
+        $this->respuesta['msg'] = 'Registro eliminado correctamente';
+    }
 }
-?>
