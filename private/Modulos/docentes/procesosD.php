@@ -36,9 +36,10 @@ class docente{
         if( $this->respuesta['msg']==='correcto' ){
             if( $this->datos['accion']==='nuevo' ){
                 $this->db->consultas('
-                    INSERT INTO docentes (codigo,nombre,direccion,telefono) VALUES(
+                    INSERT INTO docentes (codigo,nombre,nit,direccion,telefono) VALUES(
                         "'. $this->datos['codigo'] .'",
                         "'. $this->datos['nombre'] .'",
+                        "'. $this->datos['nit'] .'",
                         "'. $this->datos['direccion'] .'",
                         "'. $this->datos['telefono'] .'"
                     )
@@ -49,6 +50,7 @@ class docente{
                    UPDATE docentes SET
                         codigo     = "'. $this->datos['codigo'] .'",
                         nombre     = "'. $this->datos['nombre'] .'",
+                        nit        = "'. $this->datos['nit'] .'",
                         direccion  = "'. $this->datos['direccion'] .'",
                         telefono   = "'. $this->datos['telefono'] .'"
                     WHERE idDocente = "'. $this->datos['idDocente'] .'"
@@ -59,9 +61,9 @@ class docente{
     }
     public function buscarDocente($valor=''){
         $this->db->consultas('
-            select docentes.idDocente, docentes.codigo, docentes.nombre, docentes.direccion, docentes.telefono
+            select docentes.idDocente, docentes.codigo, docentes.nombre, docentes.nit, docentes.direccion, docentes.telefono
             from docentes
-            where docentes.codigo like "%'.$valor.'%" or docentes.nombre like "%'.$valor.'%"
+            where docentes.nit like "%'.$valor.'%" or docentes.nombre like "%'.$valor.'%"
         ');
         return $this->respuesta = $this->db->obtener_datos();
     }

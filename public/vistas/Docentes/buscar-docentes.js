@@ -11,17 +11,30 @@ export function modulo(){
         $("#frm-docente").dataset.iddocente = docente.idDocente;
         $("#txtCodigoDocente").value = docente.codigo;
         $("#txtNombreDocente").value = docente.nombre;
+        $("#txtNitDocente").value = docente.nit;
         $("#txtDireccionDoncente").value = docente.direccion;
         $("#txtTelefonoDocente").value =   docente.telefono;
+        $("#txtNitDocente").value =   docente.nit;
     };
     
         
     let eliminarDocente = (idDocente)=>{
-        
-        fetch(`private/Modulos/docentes/procesosD.php?proceso=eliminarDocente&docente=${idDocente}`).then(resp=>resp.json()).then(resp=>{
+        let dialog = document.getElementById("dialogDocentes");
+        dialog.close();
+        dialog.showModal();
 
-            traerDatos('');
+        document.getElementById("btnCancelarDocentes").addEventListener('click', event => {
+            dialog.close();
         });
+
+        document.getElementById("btnConfirmarDocentes").addEventListener('click', event => {
+            fetch(`private/Modulos/docentes/procesosD.php?proceso=eliminarDocente&docente=${idDocente}`).then(resp=>resp.json()).then(resp=>{
+                traerDatos('');
+            });
+            dialog.close();
+        })
+             
+       
     };
     let traerDatos = (valor)=>{
         fetch(`private/Modulos/docentes/procesosD.php?proceso=buscarDocente&docente=${valor}`).then(resp=>resp.json()).then(resp=>{
@@ -31,6 +44,7 @@ export function modulo(){
                     <tr data-iddocente='${docente.idDocente}' data-docentes='${JSON.stringify(docente)}'>
                         <td>${docente.codigo}</td>
                         <td>${docente.nombre}</td>
+                        <td>${docente.nit}</td>
                         <td>${docente.direccion}</td>
                         <td>${docente.telefono}</td>
                         <td>
